@@ -92,50 +92,61 @@
             <po-loading-overlay p-text="Carregando detalhes..."></po-loading-overlay>
         </div>
 
-        <div *ngIf="!detalhesModalLoading && detalhesTitulo[0] as item">
-            <div class="po-row po-mb-2">
-                <po-button
-                    *ngIf="selectedOperacao !== 'Cancelamento' && item.saldo > 0"
-                    class="po-md-4"
-                    p-label="Cancelar Boleto"
-                    p-kind="danger"
-                    p-icon="po-icon-close"
-                    (p-click)="cancelarBoleto()">
-                </po-button>
-                <!-- <po-button
-                    class="po-md-4"
-                    p-label="Sol. Alteracão Valor"
-                    p-kind="danger"
-                    p-icon="po-icon-close"
-                    (p-click)="cancelarBoleto()">
-                </po-button> -->
-            </div>
+        <div *ngIf="!detalhesModalLoading && detalhesTitulo.length > 0">
+            <div class="header-info-wrapper">
+                <div *ngIf="detalhesTitulo[0] as item">
+                    <div class="po-row po-mb-2">
+                        <po-button
+                            *ngIf="selectedOperacao !== 'Cancelamento' && totalSaldo > 0"
+                            class="po-md-4"
+                            p-label="Cancelar Boleto"
+                            p-kind="danger"
+                            p-icon="po-icon-close"
+                            (p-click)="cancelarBoleto()">
+                        </po-button>
+                        <!-- <po-button
+                            class="po-md-4"
+                            p-label="Sol. Alteracão Valor"
+                            p-kind="danger"
+                            p-icon="po-icon-close"
+                            (p-click)="cancelarBoleto()">
+                        </po-button> -->
+                    </div>
 
-            <div class="po-row">
-                <po-info class="po-md-3" p-label="Cod.Cliente" [p-value]="item.codcli"></po-info>
-                <po-info class="po-md-3" p-label="Nome Cliente" [p-value]="item.nome"></po-info>
-            </div>
-            <div class="po-row">
-                <po-info class="po-md-3" p-label="Título" [p-value]="item.numtit"></po-info>
-                <po-info class="po-md-3" p-label="Prefixo" [p-value]="item.prefixo"></po-info>
-                <po-info class="po-md-3" p-label="Parcela" [p-value]="item.parcela"></po-info>
-            </div>
-            <div class="po-row">
-                <po-info class="po-md-3" p-label="Emissão" [p-value]="item.emissao"></po-info>
-                <po-info class="po-md-3" p-label="Vencimento" [p-value]="item.dtvenc"></po-info>
-                <po-info class="po-md-3" p-label="Data Baixa" [p-value]="item.dtbaixa || 'N/A'"></po-info>
-            </div>
-            <div class="po-row">
-                <po-info class="po-md-3" p-label="Valor Real" [p-value]="(item.vlreal | currency:'BRL')!"></po-info>
-                <po-info class="po-md-3" p-label="Valor Baixa" [p-value]="(item.vlbaixa | currency:'BRL')!"></po-info>
-                <po-info class="po-md-3" p-label="Saldo" [p-value]="(item.saldo | currency:'BRL')!"></po-info>
+                    <div class="po-row">
+                        <po-info class="po-md-3" p-label="Cod.Cliente" [p-value]="item.codcli"></po-info>
+                        <po-info class="po-md-3" p-label="Nome Cliente" [p-value]="item.nome"></po-info>
+                    </div>
+                    <div class="po-row">
+                        <po-info class="po-md-3" p-label="Título" [p-value]="item.numtit"></po-info>
+                        <po-info class="po-md-3" p-label="Prefixo" [p-value]="item.prefixo"></po-info>
+                        <po-info class="po-md-3" p-label="Parcela" [p-value]="item.parcela"></po-info>
+                    </div>
+                    <div class="po-row">
+                        <po-info class="po-md-3" p-label="Emissão" [p-value]="item.emissao"></po-info>
+                        <po-info class="po-md-3" p-label="Vencimento" [p-value]="item.dtvenc"></po-info>
+                        <po-info class="po-md-3" p-label="Data Baixa" [p-value]="dataBaixa"></po-info>
+                    </div>
+                    <div class="po-row">
+                        <po-info class="po-md-3" p-label="Valor Real" [p-value]="(item.vlreal | currency:'BRL')!"></po-info>
+                        <po-info class="po-md-3" p-label="Valor Baixa" [p-value]="(totalVlbaixa | currency:'BRL')!"></po-info>
+                        <po-info class="po-md-3" p-label="Saldo" [p-value]="(totalSaldo | currency:'BRL')!"></po-info>
+                    </div>
+                </div>
+
+                <div class="pago-stamp">
+                  <img *ngIf="hasDtbaixa && totalSaldo > 0" src="assets/img/contando.gif" alt="Parcial" />
+                  <img *ngIf="hasDtbaixa && totalSaldo === 0" src="assets/img/pagos.jpg" alt="Pago" />
+                  <img *ngIf="!hasDtbaixa" src="assets/img/load.gif" alt="Pendente" />
+                </div>
             </div>
             <hr>
-            <po-info p-label="Descrição" [p-value]="item.desc"></po-info>
+            <po-table
+                [p-columns]="columnsDetalhes"
+                [p-items]="detalhesTitulo"
+                p-striped="true"
+                [p-hide-columns-manager]="true">
+            </po-table>
         </div>
-    <div *ngIf="!detalhesModalLoading && detalhesTitulo[0] as item" class="pago-stamp">
-      <img *ngIf="item.dtbaixa" src="assets/img/pagos.jpg" alt="Pago" />
-      <img *ngIf="!item.dtbaixa" src="assets/img/load.gif" alt="Pendente" />
-    </div>
   </div>
 </po-modal>

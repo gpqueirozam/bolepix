@@ -49,6 +49,42 @@ export class Monitor implements OnInit {
   detalhesTitulo: Detalhe[] = [];
   detalhesModalLoading: boolean = false;
 
+  columnsDetalhes: PoTableColumn[] = [
+    { property: 'desc'   , label: 'Descrição' },
+    { property: 'forma'  , label: 'Tipo Liquidação' },
+    { property: 'vlbaixa', label: 'Valor Baixa', type: 'currency', format: 'BRL' },
+    { property: 'saldo'  , label: 'Saldo'      , type: 'currency', format: 'BRL' },
+    { property: 'dtbaixa', label: 'Data Baixa' }
+  ];
+
+  get totalVlbaixa(): number {
+    if (!this.detalhesTitulo || this.detalhesTitulo.length === 0) {
+      return 0;
+    }
+    return this.detalhesTitulo.reduce((acc, item) => acc + (Number(item.vlbaixa) || 0), 0);
+  }
+
+  get totalSaldo(): number {
+    if (!this.detalhesTitulo || this.detalhesTitulo.length === 0) {
+      return 0;
+    }
+    const vlreal = Number(this.detalhesTitulo[0].vlreal) || 0;
+    const saldoCalculado = vlreal - this.totalVlbaixa;
+    return saldoCalculado < 0 ? 0 : saldoCalculado;
+  }
+
+  get hasDtbaixa(): boolean {
+    return !!this.detalhesTitulo && this.detalhesTitulo.some(item => !!item.dtbaixa);
+  }
+
+  get dataBaixa(): string {
+    if (!this.detalhesTitulo || this.detalhesTitulo.length === 0) {
+      return 'N/A';
+    }
+    const baixas = this.detalhesTitulo.filter(item => item.dtbaixa);
+    return baixas.length > 0 ? baixas[baixas.length - 1].dtbaixa : 'N/A';
+  }
+
   columns: PoTableColumn[] = [
     { property: 'oper'         , label: 'Operacao'       , width: '10%'        , type: 'label'       , labels: [ 
       { value: 'Cancelamento'  , label: 'Cancelamento'   , color: '#ff0000ff', textColor: '#FFFFFF'  },
@@ -223,7 +259,7 @@ export class Monitor implements OnInit {
 
     const item = this.detalhesTitulo[0];
 
-    if (item.saldo <= 0) {
+    if (this.totalSaldo <= 0) {
       this.poNotification.warning('Não é possível cancelar um título que não possui saldo.');
       return;
     }
