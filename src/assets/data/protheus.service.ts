@@ -72,7 +72,8 @@ export interface Detalhe {
   desc    : string;
   dtvenc  : string;
   transf  : string;
-  borapi  : string
+  borapi  : string;
+  forma  : string
 }
 
 export interface Titulo {
